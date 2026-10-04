@@ -1,0 +1,15 @@
+from pathlib import Path
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+
+root=Path(__file__).resolve().parents[1]; out=root/'outputs'/'COVID19_Executive_Summary_1_Page.pdf'
+styles=getSampleStyleSheet(); styles.add(ParagraphStyle(name='T',parent=styles['Title'],alignment=TA_CENTER,fontSize=19,leading=22,spaceAfter=12)); styles.add(ParagraphStyle(name='B',parent=styles['BodyText'],fontSize=9.5,leading=13,spaceAfter=6)); styles.add(ParagraphStyle(name='H',parent=styles['Heading2'],fontSize=11,leading=13,spaceBefore=5,spaceAfter=4))
+story=[Paragraph('COVID-19 Global Impact Dashboard — Executive Summary',styles['T']),Paragraph('<b>Objective:</b> Analyze cases, deaths and vaccination rollout over time, normalize comparisons by population, and communicate trends through an interactive dashboard.',styles['B'])]
+rows=[['Area','Finding / action'],['Trend','Use 7-day rolling averages to reveal wave intensity while reducing reporting noise.'],['Country comparison','Use cases/deaths per million rather than raw totals to make comparisons fairer.'],['Vaccination','Compare vaccination coverage with mortality descriptively; do not claim causality.'],['Risk metric','Case fatality rate and doubling time add context beyond simple counts.'],['Dashboard','KPI cards + trend line + country bars + vaccination scatter + slicers.']]
+t=Table(rows,colWidths=[1.45*inch,5.55*inch]); t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#D9EAF7')),('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),('GRID',(0,0),(-1,-1),.3,colors.grey),('FONTSIZE',(0,0),(-1,-1),8.5),('VALIGN',(0,0),(-1,-1),'TOP'),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5)])); story += [Paragraph('Key findings',styles['H']),t]
+story += [Paragraph('1. Major COVID waves are easier to compare after smoothing daily reporting noise.',styles['B']),Paragraph('2. Population-normalized metrics change country rankings compared with raw totals.',styles['B']),Paragraph('3. Vaccination rollout provides an important timeline for interpreting later mortality patterns.',styles['B']),Paragraph('4. Outliers should be investigated using demographic, testing, reporting and healthcare context.',styles['B']),Paragraph('5. The dashboard is designed for a non-technical audience: headline KPIs first, then trends and country comparisons.',styles['B']),Paragraph('<b>Production refresh:</b> Run <i>src/download_owid_data.py</i> and <i>src/clean_owid_data.py</i> before final submission so the dashboard uses the real OWID public dataset.',styles['B']),Paragraph('Source: Our World in Data COVID-19 Data Explorer — https://ourworldindata.org/explorers/covid',styles['B'])]
+SimpleDocTemplate(str(out),pagesize=A4,rightMargin=38,leftMargin=38,topMargin=38,bottomMargin=38).build(story); print(out)

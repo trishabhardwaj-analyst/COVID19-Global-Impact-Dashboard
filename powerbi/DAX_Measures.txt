@@ -1,0 +1,28 @@
+COVID-19 Global Impact Dashboard — Power BI DAX Measures
+
+Assume the main table is named Covid.
+
+1. Total Cases = SUM(Covid[total_cases])
+2. Total Deaths = SUM(Covid[total_deaths])
+3. New Cases = SUM(Covid[new_cases])
+4. New Deaths = SUM(Covid[new_deaths])
+5. Cases per Million = DIVIDE([Total Cases], MAX(Covid[population])) * 1000000
+6. Deaths per Million = DIVIDE([Total Deaths], MAX(Covid[population])) * 1000000
+7. Vaccinated % = DIVIDE(MAX(Covid[people_vaccinated]), MAX(Covid[population]))
+8. Case Fatality Rate = DIVIDE([Total Deaths], [Total Cases])
+9. Avg Daily Cases / M = AVERAGE(Covid[new_cases_per_million])
+10. Avg Daily Deaths / M = AVERAGE(Covid[new_deaths_per_million])
+
+Suggested visuals:
+- KPI cards: Total Cases, Total Deaths, Vaccinated %, Case Fatality Rate
+- Line chart: Date on X-axis; cases_7d_avg_per_million and deaths_7d_avg_per_million as values
+- Filled map: Country = location; Cases per Million or Deaths per Million as color saturation
+- Bar chart: Top 10 countries by total_cases_per_million
+- Bar chart: Top 10 countries by total_deaths_per_million
+- Scatter: Vaccinated % vs Deaths per Million, Location as legend/details
+- Slicers: Country, Date, Continent, Year
+
+Power BI modeling tip:
+Create a Date table:
+DateTable = CALENDAR(MIN(Covid[date]), MAX(Covid[date]))
+Then add Year = YEAR(DateTable[Date]), Month = FORMAT(DateTable[Date], "YYYY-MM"), and relate DateTable[Date] to Covid[date].
